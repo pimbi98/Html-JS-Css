@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let miObjeto = {a:1, b:2,c:3,d:4,e:5}
+
+
+        //let miArray = [32, 4152, 'hola', ()=>console.log('Im a Function'), true]
+
+      //  let [n1, n2, hola, unaFunction, booleano] = miArray Destructuring comun.
+
+        //let [n1,n2,...elResto] = miArray //Spread operator. Spread debe ser siempre el ultimo elemento del array.
+        //Si deseo omitir uno y dos.
+
+        //let [n1,n2,...elResto] = miArray
+        
+        
+        alert(elResto)//El resto es un array de las posiciones 3 a n de miArray.
+
+
+
+        let {a,...elResto} = miObjeto
+
+        alert(a)
+    </script>
+</body>
+</html>
