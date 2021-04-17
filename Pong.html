@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong</title>
+    <style>
+        body, html{
+            height: 100%;
+            background: #000;
+        }
+        #balon{
+            width: 20px;
+            height: 20px;
+            background: #000;
+            position:absolute;
+            left:10px;
+            top:0px;
+            border: 2px solid #fff;
+            border-radius:10px;
+        }
+        .barra{
+            width: 20px;
+            height: 100px;
+            background: #000;
+            border: 2px solid #fff;
+        }
+        #barra1{
+            top: 20px;
+            float: left;
+            position: absolute;
+        }
+        #barra2{
+            top: 20px;
+            right:0px;
+            position: absolute;
+        }
+        #linea{
+            width:50%;
+            border-right: #fff dashed 8px;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="balon"></div>
+    <div id="barra1" class="barra"></div>
+    <div id="barra2" class="barra"></div>
+    <div id="linea"></div>
+    <script>
+        var juego = function(){
+        let tiempo = 100;
+        let movimientoBalon = 20;
+        let movimientoBarra = 20;
+        let width = document.documentElement.clientWidth - movimientoBalon; //Resta espacio Balon como margen.
+        let height = document.documentElement.clientHeight - movimientoBalon;
+        let controlJuego;
+        let jugador1;
+        let jugador2;
+        
+        function start(){
+            init();
+            controlJuego = setInterval(juego, tiempo);
+        }
+        
+
+        function init(){
+            balon.style.left = 0;
+            balon.estado = 1;
+            balon.direction = 1; // 1 Derecha, 2 Izquierda.
+            jugador1 = new Object();
+            jugador2 = new Object();
+
+            jugador1.keyPress = false;
+            jugador2.keyPress = false;
+
+            jugador1.keyCode = null;
+            jugador2.keyCode = null;
+        }
+
+        function juego(){
+            moverBalon();
+            moverBarra();
+            chequeaSiPerdio();
+        }
+
+        function chequeaSiPerdio(){
+            if (balon.offsetLeft >= width){
+                paraJuego();
+                console.log("Punto jugador 1.")
+            }
+            if (balon.offsetLeft >= 0){
+                paraJuego();
+                console.log("Punto jugador 2.")
+            }
+        }
+
+        function paraJuego(){
+            clearInterval(controlJuego);
+            document.body.style.background = "#f00";
+        }
+        function moverBalon(){
+            chequeaEstadoBalon()
+            switch(balon.estado){
+                case 1: //derecha abajo.
+                    balon.style.left = (balon.offsetLeft + movimientoBalon) + "px";
+                    balon.style.top = (balon.offsetTop + movimientoBalon) + "px";
+                    break;
+                case 2: //derecha arriba.
+                    balon.style.left = (balon.offsetLeft + movimientoBalon) + "px";
+                    balon.style.top = (balon.offsetTop - movimientoBalon) + "px";
+                    break;
+                case 3: //izquierda abajo.
+                    balon.style.left = (balon.offsetLeft - movimientoBalon) + "px";
+                    balon.style.top = (balon.offsetTop + movimientoBalon) + "px";
+                    break;
+                case 4: //izquierda arriba.
+                    balon.style.left = (balon.offsetLeft - movimientoBalon) + "px";
+                    balon.style.top = (balon.offsetTop - movimientoBalon) + "px";
+                    break;
+            }
+
+        }
+        function chequeaEstadoBalon(){
+            //Cambio de direccion de Izquierda a Derecha.
+            if(colisionaJugador2()){
+                balon.direction = 2;
+                if(balon.estado == 1) balon.estado = 3;
+                if(balon.estado == 2) balon.estado = 4;
+            }else if(colisionaJugador1()){
+                balon.direction = 1;
+                if(balon.estado == 3) balon.estado = 1;
+                if(balon.estado == 4) balon.estado = 2;
+            }
+
+            //Cambio de direccion de Arriba a Abajo.
+            if(balon.direction === 1){
+                if(balon.offsetTop >= height) balon.estado=2;
+                else if(balon.offsetTop <= 0) balon.estado=1;
+            }else{ //Direction === 2;
+                if(balon.offsetTop >= height) balon.estado=4;
+                else if(balon.offsetTop <= 0) balon.estado=3;
+            }
+        }
+
+        function colisionaJugador1(){
+            if (balon.offsetLeft <= (barra1.clientWidth) &&
+            balon.offsetTop >= barra1.offsetTop &&
+            balon.offsetTop <= (barra1.offsetTop + barra1.clientHeight)){
+                return true;
+            }
+            return false;
+        }
+
+        function colisionaJugador2(){
+            if (balon.offsetLeft <= (width - barra2.clientWidth) &&
+            balon.offsetTop >= barra2.offsetTop &&
+            balon.offsetTop <= (barra2.offsetTop + barra2.clientHeight)){
+                return true;
+            }
+            return false
+        }
+
+        function moverBarra(){                  //q = 81   a = 65    o = 76    l = 79
+            if(jugador1.keyPress){
+                if(jugador1.keyCode == 81 && barra1.offsetTop >= 20)
+                    barra1.style.top = (barra1.offsetTop - movimientoBarra) + "px";
+                if(jugador1.keyCode == 65 && (barra1.offsetTop + barra1.clientHeight)<= height)
+                    barra1.style.top = (barra1.offsetTop + movimientoBarra) + "px";
+            }
+            if(jugador2.keyPress){
+                if(jugador2.keyCode == 76 && (barra2.offsetTop + barra2.clientHeight)<= height)
+                    barra2.style.top = (barra2.offsetTop + movimientoBarra) + "px";
+                if(jugador2.keyCode == 79 && (barra2.offsetTop >= 20))
+                    barra2.style.top = (barra2.offsetTop - movimientoBarra) + "px";
+            }
+        }
+        document.onkeydown = function(e){
+        e = e
+        console.log(e.keyCode)
+        switch(e.keyCode){
+            case 81: 
+            case 65:
+                jugador1.keyCode =  e.keyCode
+                jugador1.keyPress = true;
+                break;
+            case 79:
+            case 76:
+                jugador2.keyCode =  e.keyCode
+                jugador2.keyPress = true;
+                break;
+        }
+        
+        document.onkeyup = function(e){
+        if(e.keyCode == 81 && e.keyCode == 65)
+            jugador1.keyPress = false;
+        if(e.keyCode == 79 && e.keyCode == 76)
+            jugador2.keyPress = false;
+        }
+    }
+    start()
+}()
+
+    </script>
+
+    
+</body>
+</html>
